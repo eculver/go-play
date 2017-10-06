@@ -6,6 +6,8 @@ import (
 	"net"
 )
 
+// to run:
+// GODEBUG=netdns=go go run cmd/dnsresolver/main.go
 func main() {
 	url := "www.uber.com."
 	// url := "yahoo.com"
