@@ -9,6 +9,52 @@ import (
 	"os"
 )
 
+type Decoder interface {
+	Decode(interface{}) error
+}
+
+type Encoder interface {
+	Encode(interface{}) error
+}
+
+type Base64Decoder struct {
+	src io.Reader
+	dst io.Writer
+}
+
+func (d *Base64Decoder) Decode(v interface{}) error {
+	// bs := v.([]byte)
+	return nil
+}
+
+func NewBase64Decoder(src io.Reader, dst io.Writer) Decoder {
+	return &Base64Decoder{
+		src: base64.NewDecoder(base64.StdEncoding, src),
+		dst: dst,
+	}
+}
+
+type StringEncoder struct {
+	buf *bytes.Buffer
+	out io.Writer
+}
+
+func NewStringEncoder(out io.Writer) *StringEncoder {
+	return &StringEncoder{
+		buf: new(bytes.Buffer),
+		out: out,
+	}
+}
+
+func (e *StringEncoder) Write(v []byte) (int, error) {
+	return e.buf.WriteString(string(v))
+}
+
+func (e *StringEncoder) Close() error {
+	_, err := e.buf.WriteTo(e.out)
+	return err
+}
+
 func usage() string {
 	return fmt.Sprintf("usage: ./%s -from string -to bytes 'abcdedf'", os.Args[0])
 }
@@ -35,18 +81,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	var (
-		decoder io.Reader
-		encoder io.Writer
-	)
+	input := new(bytes.Buffer)
+	for _, val := range args {
+		input.WriteString(val + "\n")
+	}
 
 	reader, writer := io.Pipe()
+	var decoder io.Reader
+	var encoder io.WriteCloser
 
 	switch *from {
 	case "base64":
-		decoder = base64.NewDecoder(base64.StdEncoding, reader)
+		decoder = base64.NewDecoder(base64.StdEncoding, input)
 	case "ascii":
-		decoder = bytes.NewBuffer([]byte{})
+		decoder = input
 	default:
 		fmt.Println("ERROR: unknown input format")
 		fmt.Println(usage())
@@ -57,18 +105,19 @@ func main() {
 	case "base64":
 		encoder = base64.NewEncoder(base64.StdEncoding, writer)
 	case "ascii":
-		encoder = bytes.NewBuffer([]byte{})
+		encoder = NewStringEncoder(os.Stdout)
 	default:
 		fmt.Println("ERROR: unknown output format")
 		fmt.Println(usage())
 		os.Exit(1)
 	}
 
-	for _, val := range args {
-		fmt.Fprintf(writer, val)
-	}
+	go func() {
+		io.Copy(encoder, decoder)
+		encoder.Close()
+		pwriter.Close()
+	}()
 
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
-	fmt.Print(buf.String())
+	io.Copy(os.Stdout, preader)
+	preader.Close()
 }
