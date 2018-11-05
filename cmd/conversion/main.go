@@ -3,10 +3,13 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 type Decoder interface {
@@ -55,8 +58,38 @@ func (e *StringEncoder) Close() error {
 	return err
 }
 
+type JSONEncoder struct {
+	enc *json.Encoder
+	buf *bytes.Buffer
+	out io.Writer
+}
+
+func NewJSONEncoder(out io.Writer) *JSONEncoder {
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetIndent("", "  ")
+	return &JSONEncoder{
+		enc: enc,
+		buf: buf,
+		out: out,
+	}
+}
+
+func (e *JSONEncoder) Write(v []byte) (int, error) {
+	err := e.enc.Encode(v)
+	if err != nil {
+		return -1, err
+	}
+	return len(v), nil
+}
+
+func (e *JSONEncoder) Close() error {
+	_, err := e.buf.WriteTo(e.out)
+	return err
+}
+
 func usage() string {
-	return fmt.Sprintf("usage: ./%s -from string -to bytes 'abcdedf'", os.Args[0])
+	return fmt.Sprintf("usage: ./%s -from string -to bytes 'convertme'", os.Args[0])
 }
 
 func main() {
@@ -93,6 +126,10 @@ func main() {
 	switch *from {
 	case "base64":
 		decoder = base64.NewDecoder(base64.StdEncoding, input)
+	case "json":
+		decoder = json.NewDecoder(input)
+	case "yaml":
+		decoder = yaml.NewDecoder(input)
 	case "ascii":
 		decoder = input
 	default:
@@ -104,6 +141,10 @@ func main() {
 	switch *to {
 	case "base64":
 		encoder = base64.NewEncoder(base64.StdEncoding, writer)
+	case "json":
+		encoder = json.NewEncoder(writer)
+	case "yaml":
+		encoder = yaml.NewEncoder(writer)
 	case "ascii":
 		encoder = NewStringEncoder(os.Stdout)
 	default:
