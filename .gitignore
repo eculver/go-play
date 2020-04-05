@@ -2,3 +2,6 @@
 cmd/*/*
 .build
 !cmd/*/main.go
+!cmd/*/*.go
+!cmd/*/*.md
+!cmd/*/*.txt
