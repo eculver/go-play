@@ -2,3 +2,5 @@
 cmd/*/*
 .build
 !cmd/*/main.go
+!cmd/*/README.md
+!cmd/*/*.jpg
