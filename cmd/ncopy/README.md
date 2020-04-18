@@ -34,7 +34,9 @@ to represent that there are M candidates to send from. The result doesn't amount
 I thought about managing a heap-based priority queue where each node in the queue represented a source with its priority
 being tied to the number of in-flight `copyFile` operations but it got to the point where it seemed like overkill pretty quickly
 just to get something working. Plus, by treating the number of in-flight operations as priority in the heap means that every time a `copyFile` finishes, we
-would need to "Fix" the heap which is `O(log n)` that is not necessary.
+would need to "Fix" the heap which is `O(log n)` that is not necessary when using channels. I sure there's a point at which having
+a structure back prioritization, but for this example, it didn't make sense. For example, if each transfer takes `O(seconds)` in the
+best case and `O(minutes)` in the worst case, it would probably make sense to implement some intelligence around how to avoid that worst case.
 
 I'm sure there are other solutions too that I didn't consider. I'm sure that in a real-world scenario, we might want
 to consider evaluating and isolating certain nodes in the case where they may be impacted by reduced I/O meaning, if a node is 
