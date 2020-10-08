@@ -1,6 +1,6 @@
 ## github.com/eculver/go-play/pkg/confirmer
 
-A simpler confirmation library for blocking on user confirmation prompts.
+A simple confirmation library for blocking on user confirmation prompts.
 
 ### Installation
 
@@ -14,9 +14,8 @@ The `confirmer.Confirm` method provides a default configuration to cover the mos
 
 ```
 import (
-    os
-
-    github.com/eculver/go-play/pkg/confirmer
+    "os"
+    "github.com/eculver/go-play/pkg/confirmer"
 )
 
 if !confirmer.Confirm("Continue?", os.Stdin) {
@@ -53,4 +52,4 @@ not confirmed!
 exit status 1
 ```
 
-A complete working example can be found in [`./cmd/confirmer/main.go`](../../cmd/confirmer.main.go) of this repository.
+A complete working example can be found in [`./cmd/confirmer/main.go`](../../cmd/confirmer/main.go) of this repository.
