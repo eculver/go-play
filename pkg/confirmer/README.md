@@ -26,7 +26,7 @@ if !confirmer.Confirm("Continue?", os.Stdin) {
 ```
 
 This will prompt the user up to three times until a valid "accept" or "deny" input is given.
-If after three times, no valid inputs have been given, it will exit and return `false`:
+If after three times no valid inputs have been given, it will exit and return `false`:
 
 ```
 evan.culver@evan ➜  go-play (confirmer) go run cmd/confirmer/main.go
