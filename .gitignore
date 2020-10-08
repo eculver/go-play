@@ -1,4 +1,5 @@
 # whitelist only to prevent checking in binaries
 cmd/*/*
 .build
+*.out
 !cmd/*/main.go
