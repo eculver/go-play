@@ -12,11 +12,11 @@ For the sake of making this demonstrable, we're going to write `copyFile` as a f
 that sleeps for a random amount of time between 3 and 15 seconds to simulate some blocking
 operation resembling a real file transfer.
 
-Obviously, the simplest solution is to just roll through the list of destinations sequentially calling `copyFile`,
-but this would take a long time and is pretty inefficient. Also, if we have thousands of machines, it
+The simplest solution is to just roll through the list of destinations sequentially calling `copyFile`,
+but this would take a long time and is rather inefficient. Also, if we have thousands of machines, it
 will take a prohibitive amount of time to complete.
 
-So, instead, we're going to start by focusing on two optimizations:
+Instead, we're going to start by focusing on two optimizations:
 
 1) do M `copyFile` operations concurrently from any given source
 2) as soon as a machine receives the file, use it to send M operations to any remaining hosts
