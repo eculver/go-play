@@ -5,3 +5,5 @@ cmd/*/*
 !cmd/*/main.go
 !cmd/*/README.md
 !cmd/*/*.jpg
+!cmd/*/go.mod
+!cmd/*/go.sum
